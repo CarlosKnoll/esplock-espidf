@@ -6,27 +6,9 @@
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
    CONDITIONS OF ANY KIND, either express or implied.
 */
-#include <string.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_mac.h"
-#include "esp_wifi.h"
-#include "esp_event.h"
-#include "esp_log.h"
-#include "nvs_flash.h"
-
-#include "lwip/err.h"
-#include "lwip/sys.h"
-
-#include <esp_system.h>
-#include <sys/param.h>
-#include "esp_netif.h"
-#include "esp_eth.h"
-//#include "protocol_examples_common.h"
-#include <esp_http_server.h>
-
-#include "softAP.c"
-#include "webServer.c"
+#include <softAP.c>
+#include <webServer.c>
+#include <spiffs.c>
 
 void app_main(void)
 {
@@ -34,6 +16,8 @@ void app_main(void)
   
     start_nvs();
     wifi_init_softap();
+
+    spiffs_init();
 
     /* Start the server for the first time */
     server = start_webserver();

@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "esplock-espidf",
-    "project_version":    "5fb4a73-dirty",
+    "project_version":    "9680d5b-dirty",
     "project_path":       "D:/IC/Github/esplock-espidf",
     "idf_path":           "C:/Users/carlo/esp/v5.2.1/esp-idf",
     "build_dir":          "D:/IC/Github/esplock-espidf/build",
@@ -805,7 +805,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "D:/IC/Github/esplock-espidf/build/esp-idf/main/libmain.a",
-            "sources": [ "D:/IC/Github/esplock-espidf/main/softAP.c", "D:/IC/Github/esplock-espidf/main/main.c", "D:/IC/Github/esplock-espidf/main/webServer.c" ],
+            "sources": [ "D:/IC/Github/esplock-espidf/main/main.c", "D:/IC/Github/esplock-espidf/main/softAP.c", "D:/IC/Github/esplock-espidf/main/webServer.c", "D:/IC/Github/esplock-espidf/main/spiffs.c" ],
             "include_dirs": [ "." ]
         },
         "mbedtls": {

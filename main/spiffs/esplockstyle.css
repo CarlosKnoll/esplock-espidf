@@ -1,0 +1,241 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-family: Helvetica;
+    text-align: center;
+    display: block;
+    color: black;
+}
+
+td{
+    text-align: center;
+    vertical-align: center;
+    border: 1px solid black;
+    color: black;
+}
+
+.table-container{
+    display: block;
+}
+
+.table{
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+.table tr.spacer > td {
+    border: none;
+    padding: 0;
+}
+
+.users-table td:last-child {
+    border:none;
+}
+
+.users-table tfoot tr.addUser td {
+    color: #cecece;
+}
+
+.border{
+    border: 1px solid black;
+}
+.no-border{
+    border :none;
+}
+
+.button-container{
+    display: block;
+    margin: 0 auto;
+}  
+
+.button {
+    line-height: 0;
+    text-align: center;
+    border: none; 
+    border-radius: 50px;
+    color: white;
+    cursor: pointer; 
+}
+.button:active { transform: translateY(2px); }    
+
+.green-button { background-color: #4CAF50; }
+.green-button:hover { background-color: #7cdf80; }
+
+.red-button {background-color: #eb4034;}
+.red-button:hover { background-color: #f7a099; }  
+
+.gray-button {background-color: #727272;}
+.gray-button:hover { background-color: #bbbaba; }  
+
+.x-button { 
+    border-radius: 0px;
+    background-color: #eb4034;
+}
+.x-button:hover { background-color: #f7a099; }  
+
+.plus-button {
+    border-radius: 0px;
+    background-color: #4CAF50;
+}    
+.plus-button:hover { background-color: #7cdf80; }    
+
+.data-button {
+    border-radius: 0px;
+    background-color: #32beff;
+}    
+.data-button:hover { background-color: #73cbf3; }      
+
+.data-button-deactivate {
+    cursor: not-allowed;
+    border-radius: 0px;
+    background-color: #727272;;
+} 
+
+.RFID-button { background-color: #32beff; }
+.RFID-button:hover { background-color: #73cbf3; }
+
+
+
+label{
+    display: table-cell;
+}
+
+input[type=text] {
+    display: table-cell;
+    border: solid #727272;
+}   
+
+input[type=text]:focus {
+    border: solid #000000;
+}  
+
+form>p {
+    display: inline;
+    text-align: center;
+    justify-content: center;
+} 
+
+/* For mobile: */
+h1{ font-size: 7.5vw; }
+h2{ font-size: 6vw; }
+h3{ font-size: 5vw; }
+
+td{ 
+    font-size: 3vw; 
+    height: 1.75em;
+}
+th{
+    font-size:3vw;
+    height: 2em;
+}
+
+.table{ width: 70vw; }
+
+.button-container{ width: 100%; }  
+
+.button {
+    font-size: 4vw;
+    width: 70vw;
+    height: 2em;
+}
+
+.min-square-button{
+    font-size: 2vw;
+    width: 1.5em;
+    height: 1.5em;
+    padding: 3px;
+}
+
+.data-button {
+    font-size: 3vw;
+    width: 1.5em;
+    height: 1.5em;
+    padding: 3px;
+} 
+
+.data-button-deactivate {
+    font-size: 3vw;
+    width: 1.5em;
+    height: 1.5em;
+    padding: 3px;
+} 
+.data-button-deactivate:active { transform: none; }    
+
+.RFID-button{ width: 70vw; }
+
+input[type=text] {
+    font-size: 4.5vw;
+    width: 30vw;
+    height: 1.5em;
+}
+
+label{
+    font-size: 4.5vw;
+    width: 30vw;
+    height: 1.5em;
+} 
+
+@media only screen and (hover: hover) and (pointer: fine){
+    /* For desktop: */
+    h1{ font-size: 3vw; }
+    h2{ font-size: 2vw; }
+    h3{ font-size: 1.75vw; }
+    
+    td{ 
+        font-size: 1.15vw; 
+        height: 1.5em;
+    }
+    th{
+        font-size: 1.5vw;
+        height: 2em;
+    }
+    
+    .table{ width: 40vw; }
+    .access-table td:last-child { max-width: 7vw;}
+
+    .button-container{ width: 40vw; }  
+    
+    .button {
+        font-size: 1.5vw;
+        width: 100%; 
+        height: 2em;
+    }
+    
+    .min-square-button { 
+        font-size: 1vw;
+        width: 1.5em;
+        height: 1.5em;
+        padding: 2px;
+    } 
+
+    .data-button {
+        font-size: 1.15vw;
+        width: 1.5em;
+        height: 1.5em;
+        padding: 2px;
+    } 
+
+    .data-button-deactivate {
+        font-size: 1.15vw;
+        width: 1.5em;
+        height: 1.5em;
+        padding: 2px;
+    }
+    .data-button-deactivate:active { transform: none; }    
+
+    .buttonRFID{ width: 30vw; }
+    
+    input[type=text] {
+        font-size: 1.75vw;
+        width: 13vw;
+        height: 1.5em;
+    }
+    
+    label{
+        font-size: 1.75vw;
+        width: 13vw;
+        height: 1.5em;
+    } 
+}
