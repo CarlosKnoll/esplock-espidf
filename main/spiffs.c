@@ -88,12 +88,30 @@ static void initi_web_page_buffer(char* PATH)
         return;
     }
 
-    FILE *fp = fopen(PATH, "r");
+    FILE *fp = fopen(PATH, "rb");
     if (fread(index_html, st.st_size, 1, fp) == 0)
     {
         ESP_LOGE(SPIFFS_TAG, "fread failed");
     }
     fclose(fp);
+
+    //Parsing any % characters
+
+    int old_size = strlen(index_html), i=0,j=0;
+    while ( i < old_size)
+    {
+        if (index_html[i] == '%')
+        {
+            final_html[j] = '%';
+            j++;
+            final_html[j] = index_html[i];    
+        }
+        final_html[j] = index_html[i];
+        i++,j++;
+    }
+    final_html[j] = '\0';
+
+
 }
 
 esp_err_t send_web_page(httpd_req_t *req, char* PATH)
@@ -101,7 +119,7 @@ esp_err_t send_web_page(httpd_req_t *req, char* PATH)
     initi_web_page_buffer(PATH);
 
     int response;
-    sprintf(response_data, index_html);
+    sprintf(response_data, final_html);
     response = httpd_resp_send(req, response_data, HTTPD_RESP_USE_STRLEN);
     return response;
 }

@@ -22,7 +22,12 @@
         "stdio.h": "c",
         "freertos.h": "c",
         "esp_err.h": "c",
-        "webserver.h": "c"
+        "webserver.h": "c",
+        "cstdio": "c",
+        "cstdlib": "c",
+        "cwchar": "c",
+        "spiffs.h": "c",
+        "esp_http_server.h": "c"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "enabled"

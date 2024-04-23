@@ -9,4 +9,5 @@
 #include <esp_http_server.h>
 
 char index_html[4096];
+char final_html[4096];
 char response_data[4096];

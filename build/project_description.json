@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "esplock-espidf",
-    "project_version":    "9680d5b-dirty",
+    "project_version":    "bdd9bae-dirty",
     "project_path":       "D:/IC/Github/esplock-espidf",
     "idf_path":           "C:/Users/carlo/esp/v5.2.1/esp-idf",
     "build_dir":          "D:/IC/Github/esplock-espidf/build",
