@@ -1,3 +1,6 @@
+#ifndef softAP_h
+#define softAP_h
+
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -10,7 +13,9 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
-#define EXAMPLE_ESP_WIFI_SSID      "ESP32-SoftAP"
-#define EXAMPLE_ESP_WIFI_PASS      "password"
-#define EXAMPLE_ESP_WIFI_CHANNEL   CONFIG_ESP_WIFI_CHANNEL
-#define EXAMPLE_MAX_STA_CONN       CONFIG_ESP_MAX_STA_CONN
+#define ESP_WIFI_SSID      "ESP32-SoftAP"
+#define ESP_WIFI_PASS      "password"
+#define ESP_WIFI_CHANNEL   1
+#define MAX_STA_CONN       10
+
+#endif

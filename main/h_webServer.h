@@ -1,3 +1,6 @@
+#ifndef webServer_h
+#define webServer_h
+
 #include <esp_wifi.h>
 #include <esp_event.h>
 #include <esp_log.h>
@@ -11,3 +14,5 @@
 char index_html[4096];
 char final_html[4096];
 char response_data[4096];
+
+#endif

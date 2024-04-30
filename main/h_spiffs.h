@@ -1,3 +1,6 @@
+#ifndef spiffs_h
+#define spiffs_h
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/unistd.h>
@@ -8,3 +11,5 @@
 #include <esp_http_server.h>
 
 esp_err_t send_web_page(httpd_req_t *req, char* PATH);
+
+#endif
