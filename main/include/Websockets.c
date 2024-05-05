@@ -1,8 +1,9 @@
-#include <h_webServer.h>
-#include <h_spiffs.h>
-#include <h_spiffsDir.h>
+#include <h_Webserver.h>
+#include <h_SPIFFS.h>
+#include <h_RFID.h>
+#include <h_Websockets.h>
 
-static char *WS_TAG = "ws_server";
+static char *WS_TAG = "ws";
 char * data;
 
 /*
@@ -30,7 +31,13 @@ static void response(void *arg)
     ws_pkt.len = strlen(data);
     ws_pkt.type = HTTPD_WS_TYPE_TEXT;
 
+    ESP_LOGW("DEBUG","Current payload: (%s)", ws_pkt.payload);
+
     httpd_ws_send_frame_async(hd, fd, &ws_pkt);
+    if (memFree==true){
+        free(data);
+        memFree=false;
+    }
     free(resp_arg);
 }
 
@@ -50,6 +57,7 @@ static esp_err_t GENERIC_HANDLER(httpd_handle_t handle, httpd_req_t *req){
     if (ret != ESP_OK) {
         free(resp_arg);
     }
+    operation = 0;
     return ret;
 }
 
@@ -57,58 +65,90 @@ static esp_err_t GENERIC_HANDLER(httpd_handle_t handle, httpd_req_t *req){
 static esp_err_t identifyPacket(httpd_ws_frame_t ws_pkt, httpd_req_t *req){
     //Check for message from users webpage
     //Current state: response is an identifier unique to each possible websocket message received
-    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT &&
-        strstr((char*)ws_pkt.payload,"populateUsers") != NULL) {
-        data = "Usuarios: Popular tabela";
+    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strstr((char*)ws_pkt.payload,"populateUsers") != NULL) {
+        ESP_LOGW("TODO", "Temporary hardcoded response for populateUsers.");
+        ESP_LOGW("TODO", "Check for page number availability.");
+        data = "users#oldestID=1;data=12,Carlos,BD5777F0;11,Cartão,C489122B"; 
         return GENERIC_HANDLER(req->handle, req);
     }
-    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT &&
-        strstr((char*)ws_pkt.payload,"removeUser") != NULL) {
-        data = "Usuarios: Remover usuario";
+    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strstr((char*)ws_pkt.payload,"removeUser") != NULL) {
+        ESP_LOGW("TODO", "Temporary hardcoded response for removeUser.");
+        data = "updateUsers#add";
         return GENERIC_HANDLER(req->handle, req);
     }
 
     //Check for message from add users webpage
-    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT &&
-        strstr((char*)ws_pkt.payload,"addUser") != NULL) {
-        data = "Usuarios: Adicionar usuario";
+    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strstr((char*)ws_pkt.payload,"addUser") != NULL) {
+        ESP_LOGW("TODO", "Temporary hardcoded response for addUser.");
+        data = "success#add";
+        //data = "unavailable";
         return GENERIC_HANDLER(req->handle, req);
     }
     
     //Check for message from access webpage    
-    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT &&
-        strstr((char*)ws_pkt.payload,"populateAccess") != NULL) { //Functional test response -> onload access webpage
-        data = "Acessos: Popular tabela";
+    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strstr((char*)ws_pkt.payload,"populateAccess") != NULL) {
+        ESP_LOGW("TODO", "Temporary hardcoded response for populateAccess.");
+        ESP_LOGW("TODO", "Check for page number availability.");
+        data = "access#oldestID=1;data=11,Cartão,C489122B,05/05/24 09:52:05,Entrada;10,Carlos,BD5777F0,05/05/24 09:51:39,Saída;9,Carlos,BD5777F0,26/03/24 18:17:00,Entrada";
         return GENERIC_HANDLER(req->handle, req);
     }
-    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT &&
-        strcmp((char*)ws_pkt.payload,"clear") == 0) {
+    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strcmp((char*)ws_pkt.payload,"clear") == 0) {
+        ESP_LOGW("TODO", "Temporary response for clear.");
         data = "Acessos: Limpar DB";
         return GENERIC_HANDLER(req->handle, req);
     }
-    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT &&
-        strcmp((char*)ws_pkt.payload,"get") == 0) {
+    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strcmp((char*)ws_pkt.payload,"get") == 0) {
+        ESP_LOGW("TODO", "Temporary response for get.");
         data = "Acessos: Download DB";
         return GENERIC_HANDLER(req->handle, req);
     }
 
     //Check for message from RFID readings
-    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && (
-        strcmp((char*)ws_pkt.payload,"readRFID") == 0 || strcmp((char*)ws_pkt.payload,"accessRFID") == 0 )) {
-        data = "Lendo tag RFID manualmente";
+    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && (strcmp((char*)ws_pkt.payload,"loopRFID") == 0)) { //If message received == "readRFID", then...
+        tag_INT = 0;
+        return ESP_OK;
+    }
+    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && (strcmp((char*)ws_pkt.payload,"readRFID") == 0)) { //If message received == "readRFID", then...
+        operation = 1;      //Which RFID operation is being requested?
+        memFree = true;     //Will we need to free data memory later?
+
+        char * tempdata = "newUserId=";
+        uint64_t newtag = tag_INT;
+
+        char buff[12]; //How to determine dynamically?
+        sprintf(buff, "%" PRIX64, newtag);
+
+        data = malloc(strlen(tempdata)+strlen(buff));
+        strcpy(data,tempdata);
+        strcat(data,buff);
         return GENERIC_HANDLER(req->handle, req);
     }
-    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT &&
-        strcmp((char*)ws_pkt.payload,"cancelRFID") == 0) {
-        data = "cancel"; // Cancel manual RFID read request
+    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && (strcmp((char*)ws_pkt.payload,"accessRFID") == 0 )) { //If message received == "accessRFID", then...
+        ESP_LOGW("TODO", "Temporary hardcoded username for new access.");
+        operation = 2;      //Which RFID operation is being requested?
+        memFree = true;     //Will we need to free data memory later?
+
+        char * tempdata = "NewAccess=Username;";
+        uint64_t newtag = tag_INT;
+
+        char buff[12]; //How to determine dynamically?
+        sprintf(buff, "%" PRIX64, newtag);
+
+        data = malloc(strlen(tempdata)+strlen(buff));
+        strcpy(data,tempdata);
+        strcat(data,buff);
+                
+        return GENERIC_HANDLER(req->handle, req);
+    }
+    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && (strcmp((char*)ws_pkt.payload,"cancelRFID") == 0)) { //If message received == "cancelRFID, then...
+        operation = 0;
+        data = "cancel"; // Cancel specific RFID read request
         return GENERIC_HANDLER(req->handle, req);
     }
 
     //Check for message to update time
-    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT &&
-        strstr((char*)ws_pkt.payload,"epoch") != NULL) {
-        // update internal rtc?
-        ESP_LOGI(WS_TAG, "Should somehow update internal clock.");
+    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strstr((char*)ws_pkt.payload,"epoch") != NULL) {
+        ESP_LOGW("TODO", "Update internal clock.");
         return ESP_OK; //No return needed for time ws message
     }
 
@@ -120,7 +160,7 @@ static esp_err_t identifyPacket(httpd_ws_frame_t ws_pkt, httpd_req_t *req){
 esp_err_t ws_handler(httpd_req_t *req)
 {
     if (req->method == HTTP_GET) {
-        ESP_LOGI(WS_TAG, "Handshake done, the new connection was opened");
+        ESP_LOGI(WS_TAG, "Handshake done");
         return ESP_OK;
     }
     httpd_ws_frame_t ws_pkt;

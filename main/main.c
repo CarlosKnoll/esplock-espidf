@@ -1,17 +1,20 @@
-#include <softAP.c>
-#include <webServer.c>
-#include <spiffs.c>
-#include <websockets.c>
+#include "include/AccessPoint.c"
+#include "include/SPIFFS.c"
+#include "include/Webserver.c"
+#include "include/Websockets.c"
+#include "include/RFID.c"
+
 
 void app_main(void)
-{
-    static httpd_handle_t server = NULL;
-  
-    start_nvs();
-    wifi_init_softap();
+{ 
+    nvs_init();
+    softap_init();
 
     spiffs_init();
+    rc522_init();
 
     /* Start the server for the first time */
-    server = start_webserver();
+    webserver_init();
+    
+
 }

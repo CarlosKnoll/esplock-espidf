@@ -1,5 +1,20 @@
-#ifndef uri_h
-#define uri_h
+#ifndef Webserver_h
+#define Webserver_h
+
+#include <esp_wifi.h>
+#include <esp_event.h>
+#include <esp_log.h>
+#include <esp_system.h>
+#include <nvs_flash.h>
+#include <sys/param.h>
+#include "esp_netif.h"
+#include "esp_eth.h"
+#include <esp_http_server.h>
+#include "h_SPIFFS.h"
+
+char index_html[4096];
+char final_html[4096];
+char response_data[4096];
 
 static esp_err_t css_handler(httpd_req_t *req)          { return send_web_page(req, CSS_PATH); }
 
@@ -112,5 +127,6 @@ static const httpd_uri_t esplock_js_usuarios = {
         .user_ctx   = NULL,
         .is_websocket = false
 };
+
 
 #endif

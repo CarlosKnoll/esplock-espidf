@@ -1,5 +1,5 @@
-#ifndef softAP_h
-#define softAP_h
+#ifndef AccessPoint_h
+#define AccessPoint_h
 
 #include <string.h>
 #include "freertos/FreeRTOS.h"

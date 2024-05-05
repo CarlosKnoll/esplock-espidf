@@ -31,27 +31,31 @@ function onClose(event) {
 }
 function onMessage(event) {
     console.log(event.data)
+    console.log(rfidStatus)
+    checkData = event.data.split("=")
     if (event.data == 'unavailable'){
         document.getElementById('tag').value = ""
         alert('TAG já cadastrada')
-    }
-    else if (event.data == 'cancel'){
-        document.getElementById('tag').value = ""
     }
     else if (event.data == 'success#add'){
         document.getElementById('user').value = ""
         document.getElementById('tag').value = ""
         alert('Usuario adicionado')
     }
-    checkData = event.data.split("=")
-    if (checkData[0] == 'newUserId'){
-        rfidStatus = false
-        document.getElementById('RFID').innerHTML = 'Ler TAG RFID'
-        document.getElementById('tag').value = checkData[1]
+    else if (checkData[0] == 'newUserId' && rfidStatus == true){
+        if (checkData[1] != '0'){
+            document.getElementById('tag').value = checkData[1]
+            document.getElementById('RFID').innerHTML = 'Ler TAG RFID'
+            rfidStatus = false
+        }
+        else{
+            websocket.send('readRFID')
+        }
     }
-    else if(checkData[0] == 'cancel'){
+    else if (event.data == 'cancel'){
+        document.getElementById('RFID').innerHTML = 'Ler TAG RFID'  
+        document.getElementById('tag').value = ""
         rfidStatus = false
-        document.getElementById('RFID').innerHTML = 'Ler TAG RFID'   
     }
 }
 
@@ -59,6 +63,7 @@ function getRFID(){
     rfidStatus = !rfidStatus    
     if(rfidStatus == true){
         document.getElementById('RFID').innerHTML = 'Aguardando TAG...'
+        websocket.send('loopRFID')
         websocket.send('readRFID')
     }
     if(rfidStatus == false){

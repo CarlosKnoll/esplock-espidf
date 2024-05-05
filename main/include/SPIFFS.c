@@ -6,11 +6,10 @@
    CONDITIONS OF ANY KIND, either express or implied.
 */
 
-#include <h_webServer.h>
-#include <h_spiffs.h>
-#include <h_spiffsDir.h>
+#include <h_Webserver.h>
+#include <h_SPIFFS.h>
 
-static const char *SPIFFS_TAG = "spiffs";
+static const char *SPIFFS_TAG = "SPIFFS";
 
 void spiffs_init(void)
 {

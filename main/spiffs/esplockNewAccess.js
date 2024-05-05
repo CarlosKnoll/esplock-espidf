@@ -37,14 +37,18 @@ function onMessage(event) {
         if(checkData[1] == 'FALSE'){
             client = 'Usuário não cadastrado'
         }
-        else{
-            const user = checkData[1].split(";");
+        const user = checkData[1].split(";");
+        if (user[1] == '0' && rfidStatus == true){
+            websocket.send('accessRFID')
+        }
+        else if (rfidStatus == true){
             client = 'Bem vindo ' + user[0] + '! <br> (TAG: ' + user[1] + ')'
+            document.getElementById('feedback').innerHTML = 'Tentativa de acesso detectada. <br>' + client 
+            rfidStatus = false
+            document.getElementById('RFID').innerHTML = 'Ler TAG RFID'   
             websocket.send('populateAccess');
-        }  
-        document.getElementById('feedback').innerHTML = 'Tentativa de acesso detectada. <br>' + client 
-        rfidStatus = false
-        document.getElementById('RFID').innerHTML = 'Ler TAG RFID'      
+
+        }     
     }
     else if(checkData[0] == 'cancel'){
         rfidStatus = false
@@ -56,6 +60,7 @@ function getRFID(){
     rfidStatus = !rfidStatus    
     if(rfidStatus == true){
         document.getElementById('RFID').innerHTML = 'Aguardando TAG...'
+        websocket.send('loopRFID')
         websocket.send('accessRFID')
     }
     if(rfidStatus == false){

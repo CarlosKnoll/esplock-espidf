@@ -1,5 +1,14 @@
-#ifndef spiffsDir_h
-#define spiffsDir_h
+#ifndef SPIFFS_h
+#define SPIFFS_h
+
+#include <stdio.h>
+#include <string.h>
+#include <sys/unistd.h>
+#include <sys/stat.h>
+#include "esp_err.h"
+#include "esp_log.h"
+#include "esp_spiffs.h"
+#include <esp_http_server.h>
 
 #define CSS_PATH                "/spiffs/esplockstyle.css"
 
@@ -14,5 +23,7 @@
 #define MAIN_JS_PATH            "/spiffs/esplockMain.js"
 #define NEW_ACCESS_JS_PATH      "/spiffs/esplockNewAccess.js"
 #define USERS_JS_PATH           "/spiffs/esplockUsers.js"
+
+esp_err_t send_web_page(httpd_req_t *req, char* PATH);
 
 #endif

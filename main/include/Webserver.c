@@ -1,11 +1,9 @@
-#include <h_webServer.h>
-#include <h_spiffs.h>
-#include <h_spiffsDir.h>
-#include <h_uri.h>
+#include <h_Webserver.h>
+#include <h_SPIFFS.h>
 
-static char *SERVER_TAG = "server_setup";
+static char *SERVER_TAG = "Server";
 
-static httpd_handle_t start_webserver(void)
+static httpd_handle_t webserver_init(void)
 {
     httpd_handle_t server = NULL;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
