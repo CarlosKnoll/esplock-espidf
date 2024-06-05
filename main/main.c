@@ -3,6 +3,8 @@
 #include "include/Webserver.c"
 #include "include/Websockets.c"
 #include "include/RFID.c"
+#include "include/Database.c"
+
 
 
 void app_main(void)
@@ -15,6 +17,6 @@ void app_main(void)
 
     /* Start the server for the first time */
     webserver_init();
-    
 
+    db_init();
 }

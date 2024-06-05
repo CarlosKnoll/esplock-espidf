@@ -9,6 +9,8 @@
 #include <h_Webserver.h>
 #include <h_SPIFFS.h>
 
+#include <dirent.h>
+
 static const char *SPIFFS_TAG = "SPIFFS";
 
 void spiffs_init(void)
@@ -18,7 +20,7 @@ void spiffs_init(void)
     esp_vfs_spiffs_conf_t conf = {
       .base_path = "/spiffs",
       .partition_label = NULL,
-      .max_files = 5,
+      .max_files = 15,
       .format_if_mount_failed = true
     };
 
@@ -75,50 +77,4 @@ void spiffs_init(void)
     // All done, unmount partition and disable SPIFFS
     // esp_vfs_spiffs_unregister(conf.partition_label);
     // ESP_LOGI(SPIFFS_TAG, "SPIFFS unmounted");
-}
-
-static void initi_web_page_buffer(char* PATH)
-{
-    memset((void *)index_html, 0, sizeof(index_html));
-    struct stat st;
-    if (stat(PATH, &st))
-    {
-        ESP_LOGE(SPIFFS_TAG, "file not found");
-        return;
-    }
-
-    FILE *fp = fopen(PATH, "rb");
-    if (fread(index_html, st.st_size, 1, fp) == 0)
-    {
-        ESP_LOGE(SPIFFS_TAG, "fread failed");
-    }
-    fclose(fp);
-
-    //Parsing any % characters
-
-    int old_size = strlen(index_html), i=0,j=0;
-    while ( i < old_size)
-    {
-        if (index_html[i] == '%')
-        {
-            final_html[j] = '%';
-            j++;
-            final_html[j] = index_html[i];    
-        }
-        final_html[j] = index_html[i];
-        i++,j++;
-    }
-    final_html[j] = '\0';
-
-
-}
-
-esp_err_t send_web_page(httpd_req_t *req, char* PATH)
-{
-    initi_web_page_buffer(PATH);
-
-    int response;
-    sprintf(response_data, final_html);
-    response = httpd_resp_send(req, response_data, HTTPD_RESP_USE_STRLEN);
-    return response;
 }

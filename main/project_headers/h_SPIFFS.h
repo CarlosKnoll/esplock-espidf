@@ -24,6 +24,9 @@
 #define NEW_ACCESS_JS_PATH      "/spiffs/esplockNewAccess.js"
 #define USERS_JS_PATH           "/spiffs/esplockUsers.js"
 
-esp_err_t send_web_page(httpd_req_t *req, char* PATH);
+#define TEST_SENSOR_PATH        "/spiffs/test.html"
+#define TEST_SENSOR_JS_PATH     "/spiffs/test.js"
+
+#define DATABASE_PATH           "/spiffs/users.db"
 
 #endif

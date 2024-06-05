@@ -3,6 +3,8 @@
 #include <h_RFID.h>
 #include <h_Websockets.h>
 
+#include <esp_heap_caps.h>
+
 static char *WS_TAG = "ws";
 char * data;
 
@@ -39,6 +41,8 @@ static void response(void *arg)
         memFree=false;
     }
     free(resp_arg);
+    uint32_t freeHeapBytes = heap_caps_get_free_size(MALLOC_CAP_DEFAULT);
+    ESP_LOGW("DEBUG", "Websockets.c, after sending a ws response: Free bytes: %lu", freeHeapBytes);
 }
 
 /*
@@ -204,5 +208,9 @@ esp_err_t ws_handler(httpd_req_t *req)
     //     ESP_LOGE(WS_TAG, "httpd_ws_send_frame failed with %d", ret);
     // }
     // free(buf);
+
+    uint32_t freeHeapBytes = heap_caps_get_free_size(MALLOC_CAP_DEFAULT);
+    ESP_LOGW("DEBUG", "Websockets.c, at the end of ws_handler: Free bytes: %lu", freeHeapBytes);
+
     return ret;
 }

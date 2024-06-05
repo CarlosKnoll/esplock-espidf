@@ -11,4 +11,6 @@ bool memFree = false;
 int operation = 0; //0 = Only print; 1 = Print and process access; 2 = Print and returns tag to new user page; 3 = Print and returns tag to new access page
 uint64_t tag_INT;
 
+void check_tag();
+
 #endif

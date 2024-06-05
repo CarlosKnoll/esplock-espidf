@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <!-- <link rel="stylesheet" href="esplockstyle.css"> -->
+        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <h1>WS SENSOR TEST</h1>
+        <form id="newData" onsubmit="sendInfo(event); return false">
+            <p>
+                <label for="ip">IP: </label>
+                <input type="text" id="ip" name="fname"><br><br>
+            </p>
+        </form>
+        <p><button type="submit" form="newData">Iniciar</button></a></p>
+        <canvas id="myCanvas" width="800px" height="400px" style="width:100%";></canvas>
+        <script src='./test.js'></script>
+    </body>
+</html>
