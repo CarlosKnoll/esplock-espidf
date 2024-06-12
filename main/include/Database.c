@@ -80,6 +80,10 @@ void dbCheck(uint64_t tag){
     sprintf(buff, "%" PRIX64, tag);
 
     sql = malloc(strlen(query_1)+strlen(buff)+strlen(query_2));
+
+    uint32_t freeHeapBytes = heap_caps_get_free_size(MALLOC_CAP_DEFAULT);
+    ESP_LOGW("DEBUG", "Database.c, after malloc for query lenght: Free bytes: %lu", freeHeapBytes);
+
     strcpy(sql,query_1);
     strcat(sql,buff);
     strcat(sql,query_2);
@@ -99,6 +103,6 @@ void dbCheck(uint64_t tag){
     tag_INT=0;
     sqlite3_close(db);
     
-    uint32_t freeHeapBytes = heap_caps_get_free_size(MALLOC_CAP_DEFAULT);
-    ESP_LOGW("DEBUG", "Database.c after doing a query in db: Free bytes: %lu", freeHeapBytes);
+    freeHeapBytes = heap_caps_get_free_size(MALLOC_CAP_DEFAULT);
+    ESP_LOGW("DEBUG", "Database.c after query attempt: Free bytes: %lu", freeHeapBytes);
 }
