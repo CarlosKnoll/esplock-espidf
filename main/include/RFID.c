@@ -38,7 +38,7 @@ void rc522_init()
     rc522_create(&config, &scanner);
     rc522_register_events(scanner, RC522_EVENT_ANY, rc522_handler, NULL);
     rc522_start(scanner);
-    xTaskCreate(check_tag, "Check for tag read", 8192, NULL, 4, NULL);
+    xTaskCreate(check_tag, "Check for tag read", 16384, NULL, 4, NULL);
 }
 
 void check_tag(){
