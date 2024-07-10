@@ -1,12 +1,9 @@
 #include <h_DataMgmt.h>
 #include <h_SPIFFS.h>
 
-
 char* getData(char* PATH) {
-    char data[512];
-    char data_final[512];
 
-    memset((void *)data, 0, sizeof(data));
+    memset((void *)dataSys, 0, sizeof(dataSys));
 
     struct stat st;
     if (stat(PATH, &st))
@@ -16,7 +13,7 @@ char* getData(char* PATH) {
     }
 
     FILE *fp = fopen(PATH, "rb");
-    if (fread(data, st.st_size, 1, fp) == 0)
+    if (fread(dataSys, st.st_size, 1, fp) == 0)
     {
         ESP_LOGE(SPIFFS_TAG, "fread failed");
     }
@@ -24,19 +21,57 @@ char* getData(char* PATH) {
 
     //Parsing any % characters
 
-    int old_size = strlen(data), i=0,j=0;
+    int old_size = strlen(dataSys), i=0,j=0;
     while ( i < old_size)
     {
-        if (data[i] == '%')
+        if (dataSys[i] == '%')
         {
-            data_final[j] = '%';
+            dataSys_final[j] = '%';
             j++;
-            data_final[j] = data[i];    
+            dataSys_final[j] = dataSys[i];    
         }
-        data_final[j] = data[i];
+        dataSys_final[j] = dataSys[i];
         i++,j++;
     }
-    data_final[j] = '\0';
+    dataSys_final[j] = '\0';
 
-    return data_final;
+    return dataSys_final;
+}
+
+char *getUser(uint64_t TAG){
+    char *temp = getData(USERS_DATA_PATH);
+    char *p, *str1, *str2, *sp;
+    char *svP, *svP2;
+    char *lastsp = "";
+    int j;
+
+    char buff[12]; //How to determine dynamically?
+    sprintf(buff, "%" PRIX64, TAG);
+
+    ESP_LOGW("DEBUG", "TAG: %s", buff);
+
+    for (j = 1, str1 = temp; ; j++, str1 = NULL) {
+        p = strtok_r(str1, ";", &svP);
+        if(p == NULL) {
+            break;
+        }
+        printf("%s\n", p);
+
+        for (str2 = p; ; str2 = NULL) {
+               sp = strtok_r(str2, ",", &svP2);
+               if (sp == NULL){
+                    break;
+               }
+               printf(" --> %s\n", sp);
+               printf("DEBUG: lastsp =  %s\n", lastsp);
+               printf("DEBUG: buff =  %s\n", buff);
+               //ESP_LOGW("DEBUG", "TAG: %s", lastsp);
+               if (strcmp(sp,buff) == 0){
+                    return lastsp;
+               }
+               lastsp = sp;
+                printf("DEBUG: new lastsp =  %s\n", lastsp);
+           }
+    }
+    return "FALSE";
 }

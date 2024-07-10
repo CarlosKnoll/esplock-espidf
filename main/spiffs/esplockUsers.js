@@ -57,20 +57,25 @@ function populateUsers(){
     var table = document.getElementById('usersTable').tBodies[0];
     table.innerHTML = "";
     usersArray.forEach(element => {
+        console.log(element)
         const currentUser = element.split(",");
-        var tr = document.createElement('tr');
-        tr.id = currentUser[0];
-        if (currentUser[0] == oldestID){
-            maxPage = true;
-        }
-        else{
-            maxPage = false;
-        }
-        tr.innerHTML = '<td>' + currentUser[1] + '</td>' +
-        '<td>' + currentUser[2] + '</td>' +
-        '<td><button id="remove' + currentUser[0] + '" class="button x-button min-square-button">X</button></td>';
-        table.appendChild(tr);
-        document.getElementById('remove' + currentUser[0]).addEventListener('click', removeUser);
+        if(currentUser[1] != undefined){    
+            currentUser[0] = currentUser[0].replace(/(\r\n|\n|\r)/gm, ""); //Remove linebreaks
+            var tr = document.createElement('tr');
+            tr.id = currentUser[0];
+            if (currentUser[0] == oldestID){
+                maxPage = true;
+            }
+            else{
+                maxPage = false;
+            }
+            tr.innerHTML = '<td>' + currentUser[1] + '</td>' +
+            '<td>' + currentUser[2] + '</td>' +
+            '<td><button id="remove' + currentUser[0] + '" class="button x-button min-square-button">X</button></td>';
+            table.appendChild(tr);
+            console.log(tr)
+            document.getElementById('remove' + currentUser[0]).addEventListener('click', removeUser);
+        }  
     });
 }
 

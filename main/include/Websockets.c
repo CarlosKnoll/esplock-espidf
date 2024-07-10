@@ -23,10 +23,12 @@ struct async_resp_arg {
 
 static void response(void *arg)
 {
+    ESP_LOGW("DEBUG", "Into response.");
     struct async_resp_arg *resp_arg = arg;
     httpd_handle_t hd = resp_arg->hd;
     int fd = resp_arg->fd;
     httpd_ws_frame_t ws_pkt;
+    ESP_LOGW("DEBUG", "Before memset.");
     memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
     ws_pkt.payload = (uint8_t*)data;
     ws_pkt.len = strlen(data);
@@ -36,6 +38,7 @@ static void response(void *arg)
 
     httpd_ws_send_frame_async(hd, fd, &ws_pkt);
     if (memFree==true){
+        ESP_LOGW("DEBUG", "Trying to free data mem.");
         free(data);
         memFree=false;
     }
@@ -48,12 +51,14 @@ static void response(void *arg)
  */
 
 static esp_err_t GENERIC_HANDLER(httpd_handle_t handle, httpd_req_t *req){
+    ESP_LOGW("DEBUG", "Before malloc.");
     struct async_resp_arg *resp_arg = malloc(sizeof(struct async_resp_arg));
     if (resp_arg == NULL) {
         return ESP_ERR_NO_MEM;
     }
     resp_arg->hd = req->handle;
     resp_arg->fd = httpd_req_to_sockfd(req);
+    ESP_LOGW("DEBUG", "Before queue.");
     esp_err_t ret = httpd_queue_work(handle, response, resp_arg);
     if (ret != ESP_OK) {
         free(resp_arg);
@@ -69,20 +74,22 @@ static esp_err_t identifyPacket(httpd_ws_frame_t ws_pkt, httpd_req_t *req){
     if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strstr((char*)ws_pkt.payload,"populateUsers") != NULL) {
         memFree = true;     //Will we need to free data memory later?
         ESP_LOGW("TODO", "Check for page number availability.");
-        
-        char* tempdata = "users#oldestID=1;data="; 
 
-        char* buff = getData(USERS_DATA_PATH);
-        ESP_LOGW("Debug", "After getData for users: %s.", buff);
+        char * tempdata = "users#oldestID=1;data=";
+
+        //How to determine dynamically?
+        
+        char * buff = getData(USERS_DATA_PATH);
+
         if (buff != NULL)
         {
             data = malloc(strlen(tempdata)+strlen(buff));
             strcpy(data,tempdata);
             strcat(data,buff);
-            ESP_LOGW("Debug", "After getData for users: %s.", buff);
 
             return GENERIC_HANDLER(req->handle, req);
         }
+
     }
     if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strstr((char*)ws_pkt.payload,"removeUser") != NULL) {
         ESP_LOGW("TODO", "Temporary hardcoded response for removeUser.");
@@ -107,7 +114,7 @@ static esp_err_t identifyPacket(httpd_ws_frame_t ws_pkt, httpd_req_t *req){
 
         //How to determine dynamically?
         
-        char* buff = getData(HISTORY_DATA_PATH);
+        char * buff = getData(HISTORY_DATA_PATH);
 
         if (buff != NULL)
         {
@@ -115,7 +122,7 @@ static esp_err_t identifyPacket(httpd_ws_frame_t ws_pkt, httpd_req_t *req){
             strcpy(data,tempdata);
             strcat(data,buff);
 
-             return GENERIC_HANDLER(req->handle, req);
+            return GENERIC_HANDLER(req->handle, req);
         }
     }
     if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strcmp((char*)ws_pkt.payload,"clear") == 0) {
@@ -154,16 +161,34 @@ static esp_err_t identifyPacket(httpd_ws_frame_t ws_pkt, httpd_req_t *req){
         operation = 2;      //Which RFID operation is being requested?
         memFree = true;     //Will we need to free data memory later?
 
-        char * tempdata = "NewAccess=Username;";
+        char *tempdata = "NewAccess=";
+        char *tempuser = "Username;";
         uint64_t newtag = tag_INT;
+        char *user = NULL;
 
         char buff[12]; //How to determine dynamically?
         sprintf(buff, "%" PRIX64, newtag);
 
-        data = malloc(strlen(tempdata)+strlen(buff));
-        strcpy(data,tempdata);
-        strcat(data,buff);
-                
+        if (newtag != 0) {
+            user = getUser(tag_INT);
+            printf(" --> %s\n", user);
+        }
+
+        if(user == NULL){
+            data = malloc(strlen(tempdata)+strlen(tempuser)+strlen(buff));
+            strcpy(data,tempdata);
+            strcat(data,tempuser);
+            strcat(data,buff);
+        }
+        else{
+            data = malloc(strlen(tempdata)+strlen(user)+strlen(buff)+1);
+            strcpy(data,tempdata);
+            strcat(data,user);
+            strcat(data,";");
+            strcat(data,buff); 
+        }
+
+
         return GENERIC_HANDLER(req->handle, req);
     }
     if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && (strcmp((char*)ws_pkt.payload,"cancelRFID") == 0)) { //If message received == "cancelRFID, then...

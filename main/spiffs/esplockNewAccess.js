@@ -34,15 +34,15 @@ function onMessage(event) {
     console.log(event.data)
     checkData = event.data.split("=")
     if (checkData[0] == 'NewAccess'){
-        if(checkData[1] == 'FALSE'){
-            client = 'Usuário não cadastrado'
-        }
         const user = checkData[1].split(";");
         if (user[1] == '0' && rfidStatus == true){
             websocket.send('accessRFID')
         }
         else if (rfidStatus == true){
             client = 'Bem vindo ' + user[0] + '! <br> (TAG: ' + user[1] + ')'
+            if(user[0] == 'FALSE'){
+                client = 'Usuário não cadastrado'
+            }
             document.getElementById('feedback').innerHTML = 'Tentativa de acesso detectada. <br>' + client 
             rfidStatus = false
             document.getElementById('RFID').innerHTML = 'Ler TAG RFID'   

@@ -62,19 +62,22 @@ function populateTable(){
     if(accessArray != ''){
         accessArray.forEach(element => {
             const currentUser = element.split(",");
-            var tr = document.createElement('tr');
-            tr.id = currentUser[0];
-            if (currentUser[0] == oldestID){
-                maxPage = true;
+            if(currentUser[1] != undefined){    
+                currentUser[0] = currentUser[0].replace(/(\r\n|\n|\r)/gm, ""); //Remove linebreaks
+                var tr = document.createElement('tr');
+                tr.id = currentUser[0];
+                if (currentUser[0] == oldestID){
+                    maxPage = true;
+                }
+                else{
+                    maxPage = false;
+                }
+                tr.innerHTML = '<td>' + currentUser[1] + '</td>' +
+                '<td>' + currentUser[2] + '</td>' +
+                '<td>' + currentUser[3] + '</td>' + 
+                '<td>' + currentUser[4] + '</td>' 
+                table.appendChild(tr);
             }
-            else{
-                maxPage = false;
-            }
-            tr.innerHTML = '<td>' + currentUser[1] + '</td>' +
-            '<td>' + currentUser[2] + '</td>' +
-            '<td>' + currentUser[3] + '</td>' + 
-            '<td>' + currentUser[4] + '</td>' 
-            table.appendChild(tr);
         })
     }
 }
