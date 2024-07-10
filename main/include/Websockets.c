@@ -2,6 +2,7 @@
 #include <h_SPIFFS.h>
 #include <h_RFID.h>
 #include <h_Websockets.h>
+#include <h_DataMgmt.h>
 
 static char *WS_TAG = "ws";
 char * data;
@@ -66,10 +67,22 @@ static esp_err_t identifyPacket(httpd_ws_frame_t ws_pkt, httpd_req_t *req){
     //Check for message from users webpage
     //Current state: response is an identifier unique to each possible websocket message received
     if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strstr((char*)ws_pkt.payload,"populateUsers") != NULL) {
-        ESP_LOGW("TODO", "Temporary hardcoded response for populateUsers.");
+        memFree = true;     //Will we need to free data memory later?
         ESP_LOGW("TODO", "Check for page number availability.");
-        data = "users#oldestID=1;data=12,Carlos,BD5777F0;11,Cartão,C489122B"; 
-        return GENERIC_HANDLER(req->handle, req);
+        
+        char* tempdata = "users#oldestID=1;data="; 
+
+        char* buff = getData(USERS_DATA_PATH);
+        ESP_LOGW("Debug", "After getData for users: %s.", buff);
+        if (buff != NULL)
+        {
+            data = malloc(strlen(tempdata)+strlen(buff));
+            strcpy(data,tempdata);
+            strcat(data,buff);
+            ESP_LOGW("Debug", "After getData for users: %s.", buff);
+
+            return GENERIC_HANDLER(req->handle, req);
+        }
     }
     if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strstr((char*)ws_pkt.payload,"removeUser") != NULL) {
         ESP_LOGW("TODO", "Temporary hardcoded response for removeUser.");
@@ -87,10 +100,23 @@ static esp_err_t identifyPacket(httpd_ws_frame_t ws_pkt, httpd_req_t *req){
     
     //Check for message from access webpage    
     if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strstr((char*)ws_pkt.payload,"populateAccess") != NULL) {
-        ESP_LOGW("TODO", "Temporary hardcoded response for populateAccess.");
+        memFree = true;     //Will we need to free data memory later?
         ESP_LOGW("TODO", "Check for page number availability.");
-        data = "access#oldestID=1;data=11,Cartão,C489122B,05/05/24 09:52:05,Entrada;10,Carlos,BD5777F0,05/05/24 09:51:39,Saída;9,Carlos,BD5777F0,26/03/24 18:17:00,Entrada";
-        return GENERIC_HANDLER(req->handle, req);
+
+        char * tempdata = "access#oldestID=1;data=";
+
+        //How to determine dynamically?
+        
+        char* buff = getData(HISTORY_DATA_PATH);
+
+        if (buff != NULL)
+        {
+            data = malloc(strlen(tempdata)+strlen(buff));
+            strcpy(data,tempdata);
+            strcat(data,buff);
+
+             return GENERIC_HANDLER(req->handle, req);
+        }
     }
     if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strcmp((char*)ws_pkt.payload,"clear") == 0) {
         ESP_LOGW("TODO", "Temporary response for clear.");

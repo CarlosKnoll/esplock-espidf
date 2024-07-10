@@ -813,6 +813,10 @@ CONFIG_ESP_PHY_CALIBRATION_MODE=0
 # end of ESP Ringbuf
 
 #
+# Sqlite3
+#
+
+#
 # ESP System Settings
 #
 # CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_80 is not set

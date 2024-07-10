@@ -3,15 +3,6 @@
 static const char* TAG = "RC522a";
 static rc522_handle_t scanner;
 
-// void get_tag(){
-//     while(1){
-//         if (tag_INT != 0){
-//             vTaskDelete(NULL);
-//         }
-//         vTaskDelay(1000/portTICK_PERIOD_MS);
-//     }
-// }
-
 
 static void rc522_handler(void* arg, esp_event_base_t base, int32_t event_id, void* event_data)
 {
@@ -43,4 +34,15 @@ void rc522_init()
     rc522_create(&config, &scanner);
     rc522_register_events(scanner, RC522_EVENT_ANY, rc522_handler, NULL);
     rc522_start(scanner);
+    //xTaskCreate(check_tag, "Check for tag read", 16384, NULL, 4, NULL);
 }
+
+// void check_tag(){
+//     while(1){
+//         if (tag_INT != 0){
+//             dbCheck(tag_INT);
+//             //vTaskDelete(NULL);
+//         }
+//         vTaskDelay(1000/portTICK_PERIOD_MS);
+//     }
+// }

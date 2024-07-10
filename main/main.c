@@ -3,6 +3,7 @@
 #include "include/Webserver.c"
 #include "include/Websockets.c"
 #include "include/RFID.c"
+#include "include/DataMgmt.c"
 
 
 void app_main(void)
