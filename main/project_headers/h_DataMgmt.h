@@ -10,10 +10,21 @@
 #include "esp_spiffs.h"
 #include <esp_http_server.h>
 
+typedef struct{
+    char *id;
+    char *user;
+    char *tag;
+}user;
+
 char dataSys[1024];
 char dataSys_final[1024];
+char strFinal[1024];
 
-char* getData(char* PATH);
+char *getData(char* PATH);
+void setData(char* PATH);
 char *getUser(uint64_t TAG);
+void removeUser(char *id);
+int rebuildUsers(char *id);
+void populateUsersSt();
 
 #endif

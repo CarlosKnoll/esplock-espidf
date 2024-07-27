@@ -1,8 +1,9 @@
 #include <h_DataMgmt.h>
 #include <h_SPIFFS.h>
 
-char* getData(char* PATH) {
+user Usuarios[20]; //Hardcoded 20 users as limit
 
+char* getData(char* PATH) {
     memset((void *)dataSys, 0, sizeof(dataSys));
 
     struct stat st;
@@ -12,7 +13,7 @@ char* getData(char* PATH) {
         return NULL;
     }
 
-    FILE *fp = fopen(PATH, "rb");
+    FILE *fp = fopen(PATH, "rb+");
     if (fread(dataSys, st.st_size, 1, fp) == 0)
     {
         ESP_LOGE(SPIFFS_TAG, "fread failed");
@@ -38,40 +39,105 @@ char* getData(char* PATH) {
     return dataSys_final;
 }
 
+void setData(char* PATH) {
+    struct stat st;
+    if (stat(PATH, &st))
+    {
+        ESP_LOGE(SPIFFS_TAG, "file not found");
+    }
+
+    FILE *fp = fopen(PATH, "r+");
+    if ( fp == NULL ){
+        printf("could not open file.\n");
+    
+    }
+    printf("Before trying to write: strFinal=%s\n",strFinal);
+    if (fputs(strFinal, fp) == EOF){
+          ESP_LOGE(SPIFFS_TAG, "fputs failed");
+    }
+    // if (fprintf(fp,"%s",strFinal) == EOF){
+    //     ESP_LOGE(SPIFFS_TAG, "fprintf failed");
+    // }
+    fclose(fp);
+}
+
 char *getUser(uint64_t TAG){
-    char *temp = getData(USERS_DATA_PATH);
-    char *p, *str1, *str2, *sp;
-    char *svP, *svP2;
-    char *lastsp = "";
-    int j;
-
+    int i;
     char buff[12]; //How to determine dynamically?
+    
     sprintf(buff, "%" PRIX64, TAG);
-
     ESP_LOGW("DEBUG", "TAG: %s", buff);
 
-    for (j = 1, str1 = temp; ; j++, str1 = NULL) {
-        p = strtok_r(str1, ";", &svP);
+    populateUsersSt();
+
+    for (i=0; i<sizeof(Usuarios) / sizeof(user); i++){
+        if (Usuarios[i].id != NULL && (strcmp(Usuarios[i].tag,buff) == 0)){
+            return Usuarios[i].user;
+        }
+    }
+    return "FALSE";
+}
+
+void removeUser(char *id){
+    int rc;
+    populateUsersSt();
+    rc = rebuildUsers(id); 
+    if (rc == 0){
+        printf("Before calling setData: strFinal=%s\n",strFinal);
+        setData(USERS_DATA_PATH);
+    }
+    else{
+        printf("Operação não realizada");
+    }
+}
+
+int rebuildUsers(char *id){
+    int i;
+    strFinal[0] = '\0';
+    for (i=0; i<sizeof(Usuarios) / sizeof(user); i++){
+        if (Usuarios[i].id != NULL && (strcmp(Usuarios[i].id,id) != 0)){
+            strcat(strFinal,Usuarios[i].id);
+            strcat(strFinal,",");
+            strcat(strFinal,Usuarios[i].user);
+            strcat(strFinal,",");
+            strcat(strFinal,Usuarios[i].tag);
+            strcat(strFinal,";");
+        }
+    }
+    return 0;
+}
+
+void populateUsersSt(){
+    char *str = getData(USERS_DATA_PATH);
+    int i, j;
+    char *p, *sp, *temp1, *svP1, *temp2, *svP2;
+    
+    for(i=0, temp1=str; ; i++, temp1=NULL){
+        p = strtok_r(temp1, ";", &svP1);
         if(p == NULL) {
             break;
         }
-        printf("%s\n", p);
-
-        for (str2 = p; ; str2 = NULL) {
-               sp = strtok_r(str2, ",", &svP2);
-               if (sp == NULL){
+        printf("Divisão por cadastro: %s\n", p);
+        
+        for (j=0, temp2 = p; ; j++, temp2=NULL) {
+            sp = strtok_r(temp2, ",", &svP2);
+            if (sp == NULL){
+                break;
+            }
+            switch (j){
+                case 0:
+                    printf("--> Divisão por id: %s\n", sp);
+                    Usuarios[i].id = sp;
                     break;
-               }
-               printf(" --> %s\n", sp);
-               printf("DEBUG: lastsp =  %s\n", lastsp);
-               printf("DEBUG: buff =  %s\n", buff);
-               //ESP_LOGW("DEBUG", "TAG: %s", lastsp);
-               if (strcmp(sp,buff) == 0){
-                    return lastsp;
-               }
-               lastsp = sp;
-                printf("DEBUG: new lastsp =  %s\n", lastsp);
-           }
+                case 1:
+                    printf("--> Divisão por usuario: %s\n", sp);
+                    Usuarios[i].user = sp;
+                    break;
+                case 2:
+                    printf("--> Divisão por tag: %s\n", sp);
+                    Usuarios[i].tag = sp;
+                    break;
+            }
+        }
     }
-    return "FALSE";
 }

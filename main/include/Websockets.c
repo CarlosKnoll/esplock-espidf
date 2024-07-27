@@ -92,7 +92,18 @@ static esp_err_t identifyPacket(httpd_ws_frame_t ws_pkt, httpd_req_t *req){
 
     }
     if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strstr((char*)ws_pkt.payload,"removeUser") != NULL) {
-        ESP_LOGW("TODO", "Temporary hardcoded response for removeUser.");
+        char *str = (char*)ws_pkt.payload;
+        char *p, *sp, *temp1, *temp2, *svP1, *svP2;
+        char *id = "";
+
+        temp1=str;
+        p = strtok_r(temp1, ";", &svP1);
+        temp2 = p;
+        sp = strtok_r(temp2, "removeUser=", &svP2);
+        id = sp;
+        printf("--> id=%s\n", sp);
+    
+        removeUser(id);
         data = "updateUsers#add";
         return GENERIC_HANDLER(req->handle, req);
     }
@@ -100,8 +111,23 @@ static esp_err_t identifyPacket(httpd_ws_frame_t ws_pkt, httpd_req_t *req){
     //Check for message from add users webpage
     if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strstr((char*)ws_pkt.payload,"addUser") != NULL) {
         ESP_LOGW("TODO", "Temporary hardcoded response for addUser.");
-        data = "success#add";
-        //data = "unavailable";
+
+        uint64_t newtag = tag_INT;
+        char *user = NULL;
+
+        if (newtag != 0) {
+            user = getUser(tag_INT);
+            printf(" --> %s\n", user);
+            if (strcmp(user,"FALSE") == 0){ //Logic using last RFID read as ID instead of info received from websocket
+                //Add to file logic
+                data = "success#add";
+    
+            }
+            else{
+                data = "unavailable";
+            }
+        }
+
         return GENERIC_HANDLER(req->handle, req);
     }
     
