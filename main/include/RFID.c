@@ -3,16 +3,6 @@
 static const char* TAG = "RC522a";
 static rc522_handle_t scanner;
 
-// void get_tag(){
-//     while(1){
-//         if (tag_INT != 0){
-//             vTaskDelete(NULL);
-//         }
-//         vTaskDelay(1000/portTICK_PERIOD_MS);
-//     }
-// }
-
-
 static void rc522_handler(void* arg, esp_event_base_t base, int32_t event_id, void* event_data)
 {
     rc522_event_data_t* data = (rc522_event_data_t*) event_data;
@@ -38,9 +28,6 @@ void rc522_init()
         .spi.sck_gpio = SCK_GPIO,
         .spi.sda_gpio = SDA_GPIO,
     };
-
-    
-
 
     rc522_create(&config, &scanner);
     rc522_register_events(scanner, RC522_EVENT_ANY, rc522_handler, NULL);

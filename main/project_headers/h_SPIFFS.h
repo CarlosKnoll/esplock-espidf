@@ -24,6 +24,9 @@
 #define NEW_ACCESS_JS_PATH      "/spiffs/esplockNewAccess.js"
 #define USERS_JS_PATH           "/spiffs/esplockUsers.js"
 
+#define USERS_DATA_PATH         "/spiffs/users.txt"
+#define HISTORY_DATA_PATH       "/spiffs/history"
+
 esp_err_t send_web_page(httpd_req_t *req, char* PATH);
 
 #endif

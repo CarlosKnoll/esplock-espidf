@@ -2,6 +2,7 @@
 #include <h_SPIFFS.h>
 #include <h_RFID.h>
 #include <h_Websockets.h>
+#include <h_DataMgmt.h>
 
 static char *WS_TAG = "ws";
 char * data;
@@ -128,15 +129,32 @@ static esp_err_t identifyPacket(httpd_ws_frame_t ws_pkt, httpd_req_t *req){
         operation = 2;      //Which RFID operation is being requested?
         memFree = true;     //Will we need to free data memory later?
 
-        char * tempdata = "NewAccess=Username;";
+        char *tempdata = "NewAccess=";
+        char *tempuser = "Username;";
         uint64_t newtag = tag_INT;
+        char *user = NULL;
 
         char buff[12]; //How to determine dynamically?
         sprintf(buff, "%" PRIX64, newtag);
 
-        data = malloc(strlen(tempdata)+strlen(buff));
-        strcpy(data,tempdata);
-        strcat(data,buff);
+        if (newtag != 0) {
+            user = getUser(tag_INT);
+            printf(" --> %s\n", user);
+        }
+
+        if(user == NULL){
+            data = malloc(strlen(tempdata)+strlen(tempuser)+strlen(buff));
+            strcpy(data,tempdata);
+            strcat(data,tempuser);
+            strcat(data,buff);
+        }
+        else{
+            data = malloc(strlen(tempdata)+strlen(user)+strlen(buff)+1);
+            strcpy(data,tempdata);
+            strcat(data,user);
+            strcat(data,";");
+            strcat(data,buff); 
+        }
                 
         return GENERIC_HANDLER(req->handle, req);
     }
@@ -154,6 +172,7 @@ static esp_err_t identifyPacket(httpd_ws_frame_t ws_pkt, httpd_req_t *req){
 
     //Check for message to enter deep sleep mdoe
     if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strstr((char*)ws_pkt.payload,"deepSleep") != NULL) {
+        gpio_set_level(25,0);
         esp_deep_sleep_start();
         return ESP_OK; //No return needed for time ws message
     }

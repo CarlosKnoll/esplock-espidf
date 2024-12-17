@@ -3,13 +3,11 @@
 #include "include/Webserver.c"
 #include "include/Websockets.c"
 #include "include/RFID.c"
-<<<<<<< Updated upstream
-=======
 #include "include/DataMgmt.c"
 #include "include/DeepSleep.c"
 //#include "include/OLEDSetup.c"
->>>>>>> Stashed changes
 
+#include "driver/gpio.h"
 
 void app_main(void)
 { 
@@ -23,6 +21,11 @@ void app_main(void)
 
     /* Start the server for the first time */
     webserver_init();
-    
+
+    // LED ON - Feedback sleep?
+    // GPIO 25
+    gpio_set_direction(25, GPIO_MODE_OUTPUT);
+    gpio_set_level(25,1);
+
 
 }
