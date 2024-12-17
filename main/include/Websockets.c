@@ -152,6 +152,12 @@ static esp_err_t identifyPacket(httpd_ws_frame_t ws_pkt, httpd_req_t *req){
         return ESP_OK; //No return needed for time ws message
     }
 
+    //Check for message to enter deep sleep mdoe
+    if (ws_pkt.type == HTTPD_WS_TYPE_TEXT && strstr((char*)ws_pkt.payload,"deepSleep") != NULL) {
+        esp_deep_sleep_start();
+        return ESP_OK; //No return needed for time ws message
+    }
+
     else{
         return ESP_FAIL;
     }

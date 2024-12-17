@@ -33,11 +33,13 @@ void rc522_init()
 {
     rc522_config_t config = {
         .spi.host = VSPI_HOST,
-        .spi.miso_gpio = 15, //19 Não funciona, diferente da versão com arduino
-        .spi.mosi_gpio = 23,
-        .spi.sck_gpio = 18,
-        .spi.sda_gpio = 5,
+        .spi.miso_gpio = MISO_GPIO, //19 Não funciona, diferente da versão com arduino
+        .spi.mosi_gpio = MOSI_GPIO,
+        .spi.sck_gpio = SCK_GPIO,
+        .spi.sda_gpio = SDA_GPIO,
     };
+
+    
 
 
     rc522_create(&config, &scanner);
